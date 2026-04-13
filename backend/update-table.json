@@ -1,0 +1,51 @@
+{
+    "TableName": "AdmitForms-dev",
+    "AttributeDefinitions": [
+        {
+            "AttributeName": "year",
+            "AttributeType": "N"
+        },
+        {
+            "AttributeName": "date",
+            "AttributeType": "S"
+        },
+        {
+            "AttributeName": "tag_no",
+            "AttributeType": "S"
+        }
+    ],
+    "GlobalSecondaryIndexUpdates": [
+        {
+            "Create": {
+                "IndexName": "year-date-index",
+                "KeySchema": [
+                    {
+                        "AttributeName": "year",
+                        "KeyType": "HASH"
+                    },
+                    {
+                        "AttributeName": "date",
+                        "KeyType": "RANGE"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "ALL"
+                }
+            }
+        },
+        {
+            "Create": {
+                "IndexName": "tag_no-index",
+                "KeySchema": [
+                    {
+                        "AttributeName": "tag_no",
+                        "KeyType": "HASH"
+                    }
+                ],
+                "Projection": {
+                    "ProjectionType": "ALL"
+                }
+            }
+        }
+    ]
+}

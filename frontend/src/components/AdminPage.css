@@ -1,0 +1,103 @@
+/* AdminPage.css */
+
+.admin-page {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f4ff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  position: relative;
+}
+
+/* ─── Main Content ───────────────────────────────────────── */
+.admin-content {
+  flex: 1;
+  padding: 2rem;
+  margin-left: 280px;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Page Content ───────────────────────────────────────── */
+.page-content {
+  flex: 1;
+  animation: slideUp 0.3s ease;
+}
+
+/* ─── Animations ─────────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Loading State ──────────────────────────────────────── */
+.admin-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100%;
+  background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 50%, #c026d3 100%);
+}
+
+.loading-spinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid rgba(255,255,255,0.25);
+  border-top: 3px solid #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .admin-content {
+    margin-left: 260px;
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-content {
+    margin-left: 0;
+    padding: 4.5rem 1rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-content {
+    padding: 4rem 0.75rem 0.75rem;
+  }
+}
+
+/* ─── Print ──────────────────────────────────────────────── */
+@media print {
+  .admin-page { background: white; }
+  .admin-content { margin-left: 0 !important; padding: 1cm !important; }
+}
+
+/* ─── Reduced Motion ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

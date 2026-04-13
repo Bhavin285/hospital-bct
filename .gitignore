@@ -1,0 +1,33 @@
+<<<<<<< HEAD
+cat > .gitignore << 'EOF'
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+
+*.log
+
+=======
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+*.log
+
+# Backend
+>>>>>>> mobile/feature-001
+__pycache__/
+*.pyc
+.env
+
+<<<<<<< HEAD
+node_modules/
+EOF
+=======
+node_modules/
+>>>>>>> mobile/feature-001

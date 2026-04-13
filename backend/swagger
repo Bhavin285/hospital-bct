@@ -1,0 +1,654 @@
+openapi: 3.0.0
+info:
+  title: BCT Backend API
+  description: API for managing animal admission forms, discharge summaries, and user authentication
+  version: 1.0.0
+  contact:
+    name: BCT Support
+
+servers:
+  - url: https://bbtsdcezs7.execute-api.ap-south-1.amazonaws.com/Stage
+    description: Production (dev environment)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        username:
+          type: string
+          description: Mobile number used as unique username
+          example: "9876543210"
+        role:
+          type: string
+          enum: [admin, staff]
+          default: staff
+        is_active:
+          type: boolean
+          description: False means user is soft deleted
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-01-15T10:30:00"
+
+    UserCreate:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Mobile number used as username
+          example: "9876543210"
+        role:
+          type: string
+          enum: [admin, staff]
+          default: staff
+          example: "staff"
+        password:
+          type: string
+          format: password
+          minLength: 6
+          example: "secret123"
+
+    UserLogin:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Mobile number used as username
+          example: "9876543210"
+        password:
+          type: string
+          format: password
+          example: "secret123"
+
+    LoginResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Login successful"
+        user_id:
+          type: string
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        username:
+          type: string
+          example: "9876543210"
+        role:
+          type: string
+          example: "staff"
+
+    ChangePassword:
+      type: object
+      required:
+        - user_id
+        - new_password
+        - requester_id
+      properties:
+        user_id:
+          type: string
+          description: ID of the user whose password is being changed
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        new_password:
+          type: string
+          format: password
+          minLength: 6
+          example: "newpassword123"
+        requester_id:
+          type: string
+          description: ID of the user making the request (must be admin or staff)
+          example: "b2c3d4e5-f6a7-8901-bcde-f12345678901"
+        old_password:
+          type: string
+          format: password
+          description: Required when requester is staff (own password change)
+          example: "oldpassword123"
+
+    AdmitForm:
+      type: object
+      properties:
+        tag_number:
+          type: string
+          description: Auto-generated sequential identifier
+          example: "42"
+        name:
+          type: string
+          description: Owner/reporter name (stored in Title Case)
+          example: "Ramesh Patel"
+        photo_url:
+          type: string
+          format: uri
+          description: Pre-signed S3 URL (expires in 1 hour)
+          example: "https://s3.amazonaws.com/bct-photos-dev/admit-photos/42.jpg?..."
+        address:
+          type: string
+          example: "123 Main Street, Surat"
+        animal_name:
+          type: string
+          example: "Tommy"
+        diagnosis:
+          type: string
+          example: "Fracture"
+        date:
+          type: string
+          format: date
+          example: "2026-03-20"
+        animal_injury:
+          type: string
+          example: "Left leg injury"
+        sex:
+          type: string
+          enum: [Male, Female, Unknown]
+          example: "Male"
+        age:
+          type: string
+          example: "2 years"
+        body_colour:
+          type: string
+          example: "Brown And White"
+        breed:
+          type: string
+          example: "Labrador"
+        time:
+          type: string
+          example: "14:30"
+        present_dr:
+          type: string
+          example: "Dr. Mehta"
+        present_staff:
+          type: string
+          example: "Rahul Shah"
+        created_by:
+          type: string
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-20T09:00:00"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-03-20T09:00:00"
+
+    AdmitFormCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Ramesh Patel"
+        photo:
+          type: string
+          description: Base64 encoded image (optional)
+          example: "data:image/jpeg;base64,/9j/4AAQ..."
+        address:
+          type: string
+          example: "123 Main Street, Surat"
+        animal_name:
+          type: string
+          example: "Tommy"
+        diagnosis:
+          type: string
+          example: "Fracture"
+        date:
+          type: string
+          format: date
+          example: "2026-03-20"
+        animal_injury:
+          type: string
+          example: "Left leg injury"
+        sex:
+          type: string
+          example: "Male"
+        age:
+          type: string
+          example: "2 years"
+        body_colour:
+          type: string
+          example: "Brown"
+        breed:
+          type: string
+          example: "Labrador"
+        time:
+          type: string
+          example: "14:30"
+        present_dr:
+          type: string
+          example: "Dr. Mehta"
+        present_staff:
+          type: string
+          example: "Rahul Shah"
+        created_by:
+          type: string
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+
+    DischargeSummary:
+      type: object
+      properties:
+        tag_number:
+          type: string
+          example: "42"
+        status:
+          type: string
+          enum: [re_open, recover, release, death]
+          example: "recover"
+        description:
+          type: string
+          example: "Animal recovered after 5 days of treatment"
+        photo:
+          type: string
+          format: uri
+          description: Pre-signed S3 URL (expires in 1 hour)
+          example: "https://s3.amazonaws.com/bct-photos-dev/discharge-photos/42.jpg?..."
+        created_by:
+          type: string
+          example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        created_at:
+          type: string
+          format: date-time
+          example: "2026-03-25T10:00:00"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2026-03-25T10:00:00"
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Bad request"
+
+paths:
+  /user:
+    post:
+      summary: Create a new user
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request (missing fields or username already exists)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+
+    get:
+      summary: Get all users or a specific user
+      tags: [Users]
+      parameters:
+        - name: user_id
+          in: query
+          description: If provided, returns a single user; otherwise returns all users
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/User'
+                  - type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+    patch:
+      summary: Update a user's username or role
+      tags: [Users]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                user_id:
+                  type: string
+                  example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                username:
+                  type: string
+                  example: "9876543210"
+                role:
+                  type: string
+                  enum: [admin, staff]
+      responses:
+        '200':
+          description: User updated successfully
+        '400':
+          description: Bad request
+
+    delete:
+      summary: Soft delete a user (sets is_active = false)
+      tags: [Users]
+      parameters:
+        - name: user_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deleted successfully
+        '400':
+          description: user_id is required
+
+  /login:
+    post:
+      summary: User login
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Missing username or password
+        '401':
+          description: Invalid credentials or deactivated account
+        '500':
+          description: Internal server error
+
+  /change_password:
+    post:
+      summary: Change user password
+      description: |
+        Admin can change any user's password without providing old password.
+        Staff can only change their own password and must provide the old password.
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePassword'
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user_id:
+                    type: string
+        '400':
+          description: Bad request (missing fields or wrong old password)
+        '401':
+          description: Old password is incorrect
+        '403':
+          description: Unauthorized role
+        '404':
+          description: User not found
+
+  /admit_form:
+    post:
+      summary: Create a new admit form
+      description: Text fields (name, animal_name, address, etc.) are automatically stored in Title Case.
+      tags: [Admit Forms]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdmitFormCreate'
+      responses:
+        '201':
+          description: Form created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Form created"
+                  tag_number:
+                    type: integer
+                    description: Auto-generated sequential tag number
+                    example: 42
+                  photo_url:
+                    type: string
+                    format: uri
+                    description: Pre-signed S3 URL for the uploaded photo (if any)
+        '500':
+          description: Internal server error
+
+    get:
+      summary: Get all admit forms (paginated)
+      tags: [Admit Forms]
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+          example: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            default: 20
+          example: 20
+        - name: search
+          in: query
+          description: Search by name, animal name, or tag number
+          schema:
+            type: string
+          example: "Tommy"
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-01-01"
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2026-03-31"
+        - name: sex
+          in: query
+          schema:
+            type: string
+            enum: [Male, Female, Unknown]
+          example: "Male"
+        - name: breed
+          in: query
+          schema:
+            type: string
+          example: "Labrador"
+      responses:
+        '200':
+          description: Paginated list of admit forms
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdmitForm'
+                  pagination:
+                    type: object
+                    properties:
+                      totalRecords:
+                        type: integer
+                      currentPage:
+                        type: integer
+                      pageSize:
+                        type: integer
+                      totalPages:
+                        type: integer
+
+  /admit_form/{tag_number}:
+    parameters:
+      - name: tag_number
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "42"
+
+    get:
+      summary: Get admit form by tag number
+      tags: [Admit Forms]
+      responses:
+        '200':
+          description: Admit form found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdmitForm'
+        '404':
+          description: Form not found
+
+    patch:
+      summary: Update admit form
+      description: Any fields from AdmitFormCreate can be updated. Pass `photo` as Base64 to update the photo.
+      tags: [Admit Forms]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdmitFormCreate'
+      responses:
+        '200':
+          description: Form updated successfully
+        '400':
+          description: No fields to update
+
+    delete:
+      summary: Delete admit form
+      tags: [Admit Forms]
+      responses:
+        '200':
+          description: Form deleted successfully
+        '404':
+          description: Form not found
+
+  /discharge_summary:
+    post:
+      summary: Create a discharge summary
+      tags: [Discharge Summaries]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - tag_number
+                - status
+              properties:
+                tag_number:
+                  type: string
+                  example: "42"
+                status:
+                  type: string
+                  enum: [re_open, recover, release, death]
+                  example: "recover"
+                description:
+                  type: string
+                  example: "Animal recovered after 5 days of treatment"
+                photo:
+                  type: string
+                  description: Base64 encoded image (optional)
+                  example: "data:image/jpeg;base64,/9j/4AAQ..."
+                created_by:
+                  type: string
+                  example: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      responses:
+        '201':
+          description: Discharge summary created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DischargeSummary'
+        '400':
+          description: Bad request (missing tag_number/status or invalid status)
+
+  /discharge_summary/{tag_number}:
+    parameters:
+      - name: tag_number
+        in: path
+        required: true
+        schema:
+          type: string
+        example: "42"
+
+    get:
+      summary: Get all discharge summaries for a tag number
+      tags: [Discharge Summaries]
+      responses:
+        '200':
+          description: List of discharge summaries (ordered by created_at)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DischargeSummary'
+        '400':
+          description: tag_number required
+
+tags:
+  - name: Users
+    description: User management endpoints
+  - name: Authentication
+    description: Authentication endpoints
+  - name: Admit Forms
+    description: Animal admission form management
+  - name: Discharge Summaries
+    description: Discharge summary management

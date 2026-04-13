@@ -1,0 +1,16 @@
+{
+  "heroStats": [
+    {"value": "10,555+", "label": {"en": "On-Site Treatments", "gt": "સ્થળ પર સારવાર"}},
+    {"value": "6,031+", "label": {"en": "Hospital Treatments", "gt": "હોસ્પિટલમાં સારવાર"}},
+    {"value": "3", "label": {"en": "Ambulances", "gt": "એમ્બ્યુલન્સ સેવા"}},
+    {"value": "7+", "label": {"en": "Years of Service", "gt": "સેવાના વર્ષો"}}
+  ],
+  "mainStats": [
+    {"value": "4,600", "category": {"en": "On-Site", "gt": "સ્થળ પર"}, "subCategory": {"en": "Cattle", "gt": "પશુઓ"}},
+    {"value": "5,582", "category": {"en": "On-Site", "gt": "સ્થળ પર"}, "subCategory": {"en": "Animals", "gt": "પ્રાણીઓ"}},
+    {"value": "90", "category": {"en": "On-Site", "gt": "સ્થળ પર"}, "subCategory": {"en": "Birds", "gt": "પક્ષીઓ"}},
+    {"value": "1,438", "category": {"en": "Hospital", "gt": "હોસ્પિટલ"}, "subCategory": {"en": "Cattle", "gt": "પશુઓ"}},
+    {"value": "969", "category": {"en": "Hospital", "gt": "હોસ્પિટલ"}, "subCategory": {"en": "Animals", "gt": "પ્રાણીઓ"}},
+    {"value": "3,624", "category": {"en": "Hospital", "gt": "હોસ્પિટલ"}, "subCategory": {"en": "Birds", "gt": "પક્ષીઓ"}}
+  ]
+}

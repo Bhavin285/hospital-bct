@@ -1,0 +1,795 @@
+/* AnimalView.css — Animal detail + treatment form + history */
+
+.av-page {
+  min-height: 100vh;
+  background: #f5f4ff;
+  padding: 1.5rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Top bar ─────────────────────────────────────────────── */
+.av-topbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.av-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.1rem;
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #4f46e5;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.av-back-btn:hover {
+  background: #f5f3ff;
+  border-color: #c4b5fd;
+}
+
+.av-topbar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.av-tag-pill {
+  display: inline-block;
+  padding: 4px 12px;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 20px;
+  font-family: monospace;
+}
+
+.av-topbar-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  letter-spacing: -0.02em;
+}
+
+/* ── Message toast ───────────────────────────────────────── */
+.av-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.av-message.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.av-message.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+/* ── Cards ───────────────────────────────────────────────── */
+.av-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(79,70,229,0.08);
+  overflow: hidden;
+}
+
+.av-card::before {
+  content: '';
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed, #c026d3, #f59e0b);
+  background-size: 300% 100%;
+  animation: avGradient 6s linear infinite;
+}
+
+@keyframes avGradient {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 300% 50%; }
+}
+
+.av-card-header {
+  padding: 0.875rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+
+.av-card-body {
+  padding: 1.25rem;
+}
+
+/* ── Animal info layout ───────────────────────────────────── */
+.av-info-layout {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.av-photo-wrap {
+  flex-shrink: 0;
+}
+
+.av-photo {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 2px solid #e5e7eb;
+  display: block;
+}
+
+.av-fields-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  min-width: 280px;
+}
+
+.av-field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.6rem 0.875rem;
+  border-bottom: 1px solid #f9fafb;
+}
+
+.av-field-full {
+  grid-column: 1 / -1;
+}
+
+.av-field-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.av-field-value {
+  font-size: 0.9rem;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+/* ── Treatment form ──────────────────────────────────────── */
+.av-form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.av-form-row-media {
+  align-items: flex-start;
+}
+
+.av-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.av-form-field-grow {
+  flex: 2;
+  min-width: 200px;
+}
+
+.av-form-field-photo {
+  flex: 1;
+  min-width: 160px;
+  max-width: 240px;
+}
+
+.av-form-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #374151;
+  letter-spacing: 0.3px;
+}
+
+.av-req {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+.av-form-input,
+.av-form-select {
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.av-form-input:focus,
+.av-form-select:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+}
+
+.av-form-textarea {
+  padding: 0.55rem 0.75rem;
+  border: 1.5px solid #a78bfa;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.av-form-textarea:focus {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.08);
+}
+
+/* ── Photo upload box (matches AnimalForm style) ─────────── */
+.av-photo-upload-box {
+  border: 2px dashed #d1d5db;
+  border-radius: 12px;
+  background: #fafafa;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.av-photo-upload-box:hover {
+  border-color: #7c3aed;
+}
+
+.av-photo-file-input {
+  display: none;
+}
+
+.av-photo-upload-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 1.5rem;
+  color: #9ca3af;
+  font-size: 0.82rem;
+  text-align: center;
+  width: 100%;
+}
+
+.av-photo-upload-icon {
+  font-size: 1.6rem;
+}
+
+.av-photo-preview-wrap {
+  position: relative;
+  width: 100%;
+  height: 130px;
+}
+
+.av-photo-preview-img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  display: block;
+}
+
+.av-photo-remove-btn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  border: none;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Form action buttons ─────────────────────────────────── */
+.av-form-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.av-btn-save {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1.5rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.av-btn-save:hover:not(:disabled) { opacity: 0.88; }
+.av-btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.av-btn-add-more {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.6rem 1.5rem;
+  background: white;
+  color: #4f46e5;
+  border: 1.5px solid #c4b5fd;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.av-btn-add-more:hover:not(:disabled) { background: #f5f3ff; border-color: #7c3aed; }
+.av-btn-add-more:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.av-spinner-sm {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: avSpin 0.7s linear infinite;
+}
+
+.av-btn-add-more .av-spinner-sm {
+  border-color: rgba(79,70,229,0.3);
+  border-top-color: #4f46e5;
+}
+
+/* ── Timeline section ────────────────────────────────────── */
+.av-timeline-section {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(79,70,229,0.08);
+  overflow: hidden;
+}
+
+.av-timeline-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #6b7280;
+  border-bottom: 1px solid #f3f4f6;
+  background: #fafafa;
+}
+
+.av-pdf-download-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.3rem 0.85rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.av-pdf-download-btn:hover:not(:disabled) { opacity: 0.88; }
+.av-pdf-download-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.av-pdf-share-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.3rem 0.85rem;
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.av-pdf-share-btn:hover:not(:disabled) { opacity: 0.88; }
+.av-pdf-share-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.av-pdf-print-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.3rem 0.85rem;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+}
+.av-pdf-print-btn:hover:not(:disabled) { opacity: 0.88; }
+.av-pdf-print-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.av-timeline-count {
+  background: #ede9fe;
+  color: #5b21b6;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.av-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2.5rem 1.5rem;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.av-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: avSpin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes avSpin {
+  to { transform: rotate(360deg); }
+}
+
+.av-empty {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 0.9rem;
+}
+
+/* ── History list ────────────────────────────────────────── */
+.av-history-list {
+  padding: 1.25rem 1.25rem 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.av-history-item {
+  display: flex;
+  gap: 0;
+}
+
+/* Left rail: dot + line */
+.av-timeline-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 36px;
+  flex-shrink: 0;
+  padding-top: 6px;
+}
+
+.av-timeline-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2.5px solid white;
+  box-shadow: 0 0 0 2px currentColor;
+  flex-shrink: 0;
+}
+
+.av-status-reopen  { color: #7c3aed; }
+.av-status-recover { color: #16a34a; }
+.av-status-release { color: #2563eb; }
+.av-status-death   { color: #dc2626; }
+
+.av-timeline-dot.av-status-reopen  { background: #7c3aed; }
+.av-timeline-dot.av-status-recover { background: #16a34a; }
+.av-timeline-dot.av-status-release { background: #2563eb; }
+.av-timeline-dot.av-status-death   { background: #dc2626; }
+
+.av-timeline-line {
+  flex: 1;
+  width: 2px;
+  background: #e5e7eb;
+  margin: 4px 0;
+  min-height: 24px;
+}
+
+/* Right: content */
+.av-history-content {
+  flex: 1;
+  padding: 0 0 1.5rem 0.75rem;
+  min-width: 0;
+}
+
+.av-history-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+.av-history-delete-wrap {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.av-delete-btn {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.4;
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: opacity 0.2s, background 0.2s;
+  line-height: 1;
+}
+.av-delete-btn:hover { opacity: 1; background: #fee2e2; }
+
+.av-delete-confirm-text {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.av-delete-confirm-yes,
+.av-delete-confirm-no {
+  border: none;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 3px 10px;
+  transition: opacity 0.2s;
+}
+
+.av-delete-confirm-yes {
+  background: #dc2626;
+  color: white;
+}
+.av-delete-confirm-yes:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.av-delete-confirm-no {
+  background: #f3f4f6;
+  color: #374151;
+}
+.av-delete-confirm-no:hover { background: #e5e7eb; }
+
+.av-status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.av-status-badge.av-status-reopen  { background: #ede9fe; color: #5b21b6; }
+.av-status-badge.av-status-recover { background: #dcfce7; color: #166534; }
+.av-status-badge.av-status-release { background: #dbeafe; color: #1d4ed8; }
+.av-status-badge.av-status-death   { background: #fee2e2; color: #991b1b; }
+
+.av-entry-datetime {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+/* History body: description left, photo right */
+.av-history-body {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.av-history-desc {
+  flex: 3;
+  min-width: 0;
+}
+
+.av-history-desc p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.av-history-photo-col {
+  flex: 2;
+  max-width: 220px;
+  min-width: 120px;
+  flex-shrink: 0;
+}
+
+.av-history-photo {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  display: block;
+  object-fit: cover;
+  max-height: 160px;
+}
+
+.av-history-photo-placeholder {
+  width: 100%;
+  min-height: 100px;
+  border: 2px dashed #e5e7eb;
+  border-radius: 10px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #d1d5db;
+  font-size: 0.78rem;
+}
+
+.av-placeholder-icon {
+  font-size: 1.4rem;
+  opacity: 0.5;
+}
+
+/* ── Clickable photo hint ────────────────────────────────── */
+.av-photo-clickable {
+  cursor: zoom-in;
+  transition: opacity 0.2s;
+}
+.av-photo-clickable:hover { opacity: 0.88; }
+
+/* ── Lightbox ────────────────────────────────────────────── */
+.av-lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.av-lightbox-box {
+  position: relative;
+  background: #1a1a2e;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+}
+
+.av-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  border: none;
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  transition: background 0.2s;
+}
+.av-lightbox-close:hover { background: rgba(0, 0, 0, 0.8); }
+
+.av-lightbox-img {
+  display: block;
+  max-width: 90vw;
+  max-height: calc(90vh - 60px);
+  object-fit: contain;
+}
+
+.av-lightbox-footer {
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: center;
+  background: #1a1a2e;
+}
+
+.av-lightbox-download {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.5rem 1.5rem;
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.av-lightbox-download:hover { opacity: 0.88; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .av-page { padding: 1rem; gap: 1rem; }
+  .av-photo { width: 120px; height: 120px; }
+  .av-fields-grid { grid-template-columns: 1fr; min-width: 0; }
+  .av-field-full { grid-column: 1; }
+  .av-topbar-name { font-size: 1.05rem; }
+  .av-form-field-photo { max-width: 100%; }
+  .av-history-body { flex-direction: column; }
+  .av-history-photo-col { max-width: 100%; width: 100%; }
+  .av-form-row { flex-direction: column; }
+  .av-form-field { min-width: 0; }
+}

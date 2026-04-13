@@ -1,0 +1,306 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: BCT Backend
+
+Globals:
+  Function:
+    Runtime: python3.9
+    Timeout: 30
+    MemorySize: 128
+    CodeUri: src/
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+
+Resources:
+
+  # ── Cognito ────────────────────────────────────────────────────────────────
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub "bct-users-${Environment}"
+      UsernameConfiguration:
+        CaseSensitive: false
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 6
+          RequireUppercase: false
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+      Schema:
+        - Name: role
+          AttributeDataType: String
+          Mutable: true
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: admin_only
+            Priority: 1
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: !Sub "bct-app-client-${Environment}"
+      UserPoolId: !Ref CognitoUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      TokenValidityUnits:
+        IdToken: hours
+        AccessToken: hours
+        RefreshToken: days
+      IdTokenValidity: 8
+      AccessTokenValidity: 8
+      RefreshTokenValidity: 30
+
+  # ── API Gateway ────────────────────────────────────────────────────────────
+
+  ServerlessApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub "bct-api-${Environment}"
+      StageName: !Ref Environment
+      Cors:
+        AllowMethods: "'GET,POST,PUT,DELETE,PATCH,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt CognitoUserPool.Arn
+            Identity:
+              Header: Authorization
+
+  # ── DynamoDB Tables ────────────────────────────────────────────────────────
+
+  AdmitFormsTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub "bct-admit-forms-${Environment}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: record_type
+          AttributeType: S
+        - AttributeName: date
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: sk-index
+          KeySchema:
+            - AttributeName: SK
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+        - IndexName: record_type-date-index
+          KeySchema:
+            - AttributeName: record_type
+              KeyType: HASH
+            - AttributeName: date
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+  DischargeSummariesTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Sub "bct-discharge-summaries-${Environment}"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+
+  PhotosBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "bct-photos-${Environment}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - "*"
+            AllowedMethods:
+              - GET
+            AllowedOrigins:
+              - "https://hospital.bezubancharitabletrust.com"
+              - "http://localhost:5173"
+            MaxAge: 3600
+
+  # ── Lambda Functions ───────────────────────────────────────────────────────
+
+  CreateUserFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "bct-create-user-${Environment}"
+      Handler: functions.users.handler.lambda_handler
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref CognitoUserPool
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminCreateUser
+                - cognito-idp:AdminSetUserPassword
+                - cognito-idp:AdminDeleteUser
+                - cognito-idp:AdminDisableUser
+                - cognito-idp:AdminEnableUser
+                - cognito-idp:AdminUpdateUserAttributes
+                - cognito-idp:AdminGetUser
+                - cognito-idp:ListUsers
+              Resource: !GetAtt CognitoUserPool.Arn
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /user
+            Method: ANY
+
+  ChangePasswordFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "bct-change-password-${Environment}"
+      Handler: functions.auth.change_password.lambda_handler
+      Environment:
+        Variables:
+          USER_POOL_ID: !Ref CognitoUserPool
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action:
+                - cognito-idp:AdminSetUserPassword
+                - cognito-idp:ChangePassword
+              Resource: !GetAtt CognitoUserPool.Arn
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /change_password
+            Method: POST
+
+  AdmitFormFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "bct-admit-form-${Environment}"
+      Handler: functions.admit_forms.handler.lambda_handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref AdmitFormsTable
+          PHOTO_BUCKET: !Ref PhotosBucket
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref AdmitFormsTable
+        - S3CrudPolicy:
+            BucketName: !Ref PhotosBucket
+      Events:
+        CreateForm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /admit_form
+            Method: POST
+        GetAllForms:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /admit_form
+            Method: GET
+        GetFormById:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /admit_form/{tag_number}
+            Method: GET
+        UpdateForm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /admit_form/{tag_number}
+            Method: PATCH
+        DeleteForm:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /admit_form/{tag_number}
+            Method: DELETE
+
+  DischargeSummaryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: !Sub "bct-discharge-summary-${Environment}"
+      Handler: functions.discharge_summaries.handler.lambda_handler
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref DischargeSummariesTable
+          PHOTO_BUCKET: !Ref PhotosBucket
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DischargeSummariesTable
+        - S3CrudPolicy:
+            BucketName: !Ref PhotosBucket
+      Events:
+        CreateSummary:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /discharge_summary
+            Method: POST
+        GetSummaryByTagNumber:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /discharge_summary/{tag_number}
+            Method: GET
+        DeleteSummary:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ServerlessApi
+            Path: /discharge_summary/{tag_number}/{summary_id}
+            Method: DELETE
+
+# ── Outputs ────────────────────────────────────────────────────────────────
+
+Outputs:
+  UserPoolId:
+    Description: Cognito User Pool ID (use as VITE_COGNITO_USER_POOL_ID)
+    Value: !Ref CognitoUserPool
+
+  UserPoolClientId:
+    Description: Cognito App Client ID (use as VITE_COGNITO_CLIENT_ID)
+    Value: !Ref CognitoUserPoolClient
+
+  ApiUrl:
+    Description: API Gateway URL (use as VITE_API_BASE_URL)
+    Value: !Sub "https://${ServerlessApi}.execute-api.${AWS::Region}.amazonaws.com/${Environment}"

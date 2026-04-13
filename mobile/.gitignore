@@ -1,0 +1,74 @@
+<<<<<<< HEAD
+cat > mobile/.gitignore << 'EOF'
+
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub/
+.pub-cache/
+
+build/
+*.apk
+*.aab
+*.so
+*.dill
+*.stamp
+
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+key.properties
+*.keystore
+*.jks
+
+android/.gradle/
+android/local.properties
+android/gradlew
+android/gradlew.bat
+
+ios/.symlinks/
+ios/Pods/
+ios/Podfile.lock
+ios/build/
+ios/Flutter/Generated.xcconfig
+
+coverage/
+*.lcov
+
+*.log
+EOF
+=======
+gradle-wrapper.jar
+/.gradle
+/captures/
+/gradlew
+/gradlew.bat
+/local.properties
+GeneratedPluginRegistrant.java
+.cxx/
+/build/
+
+# Remember to never publicly share your keystore.
+# See https://flutter.dev/to/reference-keystore
+key.properties
+**/*.keystore
+**/*.jks
+
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android build files
+**/android/.gradle/
+**/android/local.properties
+**/android/gradlew
+**/android/gradlew.bat
+
+# Build outputs
+/build/
+.cxx/
+>>>>>>> mobile/feature-001
